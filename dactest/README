@@ -1,0 +1,41 @@
+PIN MAPPING:
+3 (SDA I2C) -> SDA I2C
+5 (SCL I2C) -> SCL I2C
+7 (GPIO4) -> !RESET
+6 (GND) -> A1
+9 (GND) -> A0
+11 (GPIO17) -> !LDAC
+
+NOTES:
+A1 IS SET LOW
+A0 IS SET LOW
+!LDAC IS SET LOW
+
+I2C Importance:
+The documentation says to use the address that is found from
+the command "sudo i2cdetect -y 1", however this differs from 
+the address required by the data sheet. Therefore, the 
+documentation does method does not work. 
+
+
+A simple implementation using I2C and python is given below:
+# Start Program
+import smbus as SB
+
+# Note that 1 is used based on the version of the RPI
+bus = SB.SMBus(1)
+
+# 0x0C is ("00011" + A1 + A0)
+# where A1 = A0 = 0 for simplicity
+# The address is automatically shifted left one bit for R/W
+ADDR = 0x0C
+
+# This represents command + address of DAC 0011 + 1111
+CMD = 0x1F
+
+# This represents the resolution of the output voltage
+DATA = [0xFF, 0XFF]
+
+# Now to send the command
+bus.write_i2c_data_block(ADDR, CMD, DATA)
+
