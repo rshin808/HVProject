@@ -1,0 +1,6 @@
+use #!/usr/bin/python
+use sudo chmod +x scriptname.py
+run with sudo ./scriptname.py
+
+1) Setup the driver
+

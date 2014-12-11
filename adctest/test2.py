@@ -15,8 +15,19 @@ time.sleep(0.5)
 
 bus = smbus.SMBus(1)
 
-ADDR = 0x20
+ADDR = 0x23
 VMAX = 5
+RES = 12
+
+def get_channel(binary_string):
+    return int(binary_string[-3:], 2) + 1
+
+def int_to_binary8(input_int):
+    return "{0:b}".format(input_int).zfill(8)
+
+def convert_int_to_voltage(input_int):
+    return ((float(input_int) / float(2 ** RES)) * float(VMAX))
+    
 
 def write_addr(cmd):
     bus.write_byte(ADDR, cmd)
@@ -43,7 +54,12 @@ try:
     write_addr(0x00)
 
     while(True):
-        print get_readings()
+        data = get_readings()[:2]
+        data1 = int_to_binary8(data[0])
+        data2 = int_to_binary8(data[1])
+        print "CH" + str(get_channel(data1[:4])) + ": "
+        voltage_binary = data1[4:] + data2
+        print convert_int_to_voltage(int(voltage_binary, 2))
         time.sleep(1)             
 
 except Exception, e:
