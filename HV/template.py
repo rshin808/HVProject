@@ -1,5 +1,5 @@
-class template_img:
-    import csv
+import csv
+class Template_img:
     """
         This is the template for creating bitmaps.
         The template class only allows updte to the SEPS525.
@@ -21,6 +21,7 @@ class template_img:
         """
             This creates the bitmap for the template given an image.
             The bitmap values match the values for the SEPS525.
+            Note: To reduce delay change .csv to have more than 2 values per row
         """
         with open(img, "rb") as img_csv:
             reader = csv.reader(img_csv)
