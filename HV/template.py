@@ -1,7 +1,5 @@
-import time
-import csv
-
 class template_img:
+    import csv
     """
         This is the template for creating bitmaps.
         The template class only allows updte to the SEPS525.
@@ -43,6 +41,7 @@ class template_img:
 
     def bitmap(self):
         return self._bitamp
-
+"""
 test = template_img("test", "VIMeas1.csv")
 test.update_oled()
+"""
