@@ -89,7 +89,7 @@ class SEPS525_nhd:
         time.sleep(0.1)
         
         spi = spidev.SpiDev()
-        spi.open(0, 0)
+        spi.open(0, 1)
         spi.max_speed_hz = 100000000
         spi.mode = 3
 
@@ -180,7 +180,7 @@ class SEPS525_nhd:
         self.seps525_reg(RGB_POL, 0x00)
 
     def __init_oled_display(self):
-        self.fill_screen((0, 0))
+        self.fill_screen((0, 255))
         time.sleep(0.5)
 
     def __seps525_set_region(self, width1 = 0, height1 = 0, width2 = 160, height2 = 128):
