@@ -21,9 +21,15 @@ class Text_string:
                 self._bitmap[h] += font14h.FONT[c][h]
         self._len = len(self._bitmap[0])
     
-    def update_number(self):
-        pass
-        
+    def update_string(self, string):
+        string = string.replace(" ", "|")
+        remaining = len(string) - len(self._string)
+        if remaining > 0:
+            for check in range(len(remaining)):
+                string += "|"
+        self._string = string
+        self.__init_bitmap()
+
     def draw_string(self, color, background, oled):
         oled.seps525_set_region(self._x, self._y, self._len, self._height)
         oled.data_start()

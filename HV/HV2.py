@@ -1,8 +1,14 @@
 from seps525 import SEPS525_nhd as Oled
 from template import Template_img as Temp
 from text import Text_string as TS
+from ad7998_1 import AD7998_1 as ADC  
 import time
+import smbus
 
+PINS = {
+    "AS" : 11,
+    "CONVST" : 10,
+}
 
 t1 = time.time()
 VIMeas1 = Temp("VIMeas1", "VIMeas1.csv")
@@ -21,8 +27,14 @@ ID2 = TS(91, 69, 14, IDefault)
 ID3 = TS(91, 88, 14, IDefault)
 ID4 = TS(91, 107, 14, IDefault)
 t3 = time.time()
+bus = smbus.SMBus(1)
+CHV = ADC(PINS, 5, 12, 5, 0x23, "11111111")
+CHV.init_adc(bus)
+t4 = time.time()
 print "INITTemplate: " + str(t2 - t1)
 print "INITTextDefault: " + str(t3 - t2)
+print "INITADC: " + str(t4 - t3)
+
 
 
 
@@ -34,7 +46,8 @@ TEMPS = {
     }
 
 display = Oled()
-try:
+#try:
+if (True):
     print "Initializing"
     display.show()
     display.fill_screen((255, 255))
@@ -104,10 +117,21 @@ try:
     
     t2 = time.time()
     print "Changing Text: " + str(t2 - t1)
+    count = 0
+    while count < 10:
+        t1 = time.time()
+        CHV.get_data(bus)
+        for v in CHV:
+            print v
+        t2 = time.time()
+        time.sleep(0.5)
+        print "Conversion: " + str(t2 - t1)
     time.sleep(1)
     display.hide()
     display.end_gpio()
+"""
 except Exception, e:
     print e
     display.hide()
     display.end_gpio()
+"""
