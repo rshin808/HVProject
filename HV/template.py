@@ -11,7 +11,7 @@ class Template_img:
         """
         self._name = str(name)
         self._bitmap = []
-	self._btest = []
+        self._btest = []
         self.__create_bitmap(img)
 
     def __str__(self):
@@ -29,7 +29,9 @@ class Template_img:
                 self._bitmap.append(tuple([int(row[0]), int(row[1])]))
     
     def update_oled(self, oled):
-	value = []
+        oled.seps525_set_region(0, 0, 160, 128)
+        oled.data_start()
+        value = []
         for pixel in self._bitmap:
             value.append(pixel[0])
             value.append(pixel[1])

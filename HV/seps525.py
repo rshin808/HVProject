@@ -183,7 +183,7 @@ class SEPS525_nhd:
         self.fill_screen((0, 255))
         time.sleep(0.5)
 
-    def __seps525_set_region(self, width1 = 0, height1 = 0, width2 = 160, height2 = 128):
+    def seps525_set_region(self, width1 = 0, height1 = 0, width2 = 160, height2 = 128):
 	    # specify the update region
 	    # start on (width1, height1)
         self.seps525_reg(MX1, width1)
@@ -201,7 +201,7 @@ class SEPS525_nhd:
         spi.xfer2(list(value))
         gpio.output(RS, False)
     
-    def __data_start(self):
+    def data_start(self):
         global gpio
         global spi
         gpio.output(RS, False)
@@ -219,8 +219,8 @@ class SEPS525_nhd:
 
     def fill_screen(self, color):
 	    # color = (c1, c2)
-        self.__seps525_set_region()
-        self.__data_start()
+        self.seps525_set_region()
+        self.data_start()
         value = []
 	
 	    # create array of 4096
@@ -234,14 +234,14 @@ class SEPS525_nhd:
 
     def draw_pixel(self, x, y, color):
 	    # color = (c1, c2)
-	    self.__seps525_set_region(x, y, 1, 1)
-	    self.__data_start()
+	    self.seps525_set_region(x, y, 1, 1)
+	    self.data_start()
 	    self.data(list(color))
 
     def draw_vline(self, x, y, h, color):
 	    # color = (c1, c2)
-        self.__seps525_set_region(x, y, 1, h)
-        self.__data_start()
+        self.seps525_set_region(x, y, 1, h)
+        self.data_start()
         value = []
         for pixel in range(2 * h):
             value.append(color[0])
@@ -251,8 +251,8 @@ class SEPS525_nhd:
 
     def draw_hline(self, x, y, w, color):
 	    # color = (c1, c2)
-        self.__seps525_set_region(x, y, w, 1)
-        self.__data_start()
+        self.seps525_set_region(x, y, w, 1)
+        self.data_start()
 
         value = []
         for pixel in range(2 * w):
@@ -264,8 +264,8 @@ class SEPS525_nhd:
     def draw_rect(self, x, y, w, h, color, filled = True):
 	    # color = (c1, c2)
         if(filled):
-            self.__set_region(x, y, w, h)
-            self.__data_start()
+            self.set_region(x, y, w, h)
+            self.data_start()
             value = []
             for pixel in range(2 * h * w):
                 value.append(color[0])
