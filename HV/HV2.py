@@ -4,6 +4,10 @@ from text import Text_string as TS
 from ad7998_1 import AD7998_1 as ADC  
 import time
 import smbus
+import RPi.GPIO as gpio
+
+gpio.cleanup()
+gpio.setmode(gpio.BOARD)
 
 PINS = {
     "AS" : 11,
@@ -29,7 +33,8 @@ ID4 = TS(91, 107, 14, IDefault)
 t3 = time.time()
 bus = smbus.SMBus(1)
 CHV = ADC(PINS, 5, 12, 5, 0x23, "11111111")
-CHV.init_adc(bus)
+CHV.init_adc_address(gpio)
+CHV.init_adc_bus(bus)
 t4 = time.time()
 print "INITTemplate: " + str(t2 - t1)
 print "INITTextDefault: " + str(t3 - t2)
@@ -126,6 +131,7 @@ if (True):
         t2 = time.time()
         time.sleep(0.5)
         print "Conversion: " + str(t2 - t1)
+        count += 1
     time.sleep(1)
     display.hide()
     display.end_gpio()

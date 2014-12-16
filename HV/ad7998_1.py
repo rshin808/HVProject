@@ -34,9 +34,14 @@ class AD7998_1:
         self._lowest = 9
         self._voltage = [-1, -1, -1, -1, -1, -1, -1, -1]       
 
-    def init_adc(self, bus):
-        
-        gpio.setmode(gpio.BOARD)
+    def __str__(self):
+        return 
+
+    def __iter__(self):
+        for v in self._voltage:
+            yield v
+
+    def init_adc_address(self, gpio):
         gpio.setup(self._AS, gpio.OUT)
         gpio.setup(self._CONVST, gpio.OUT)
 
@@ -47,36 +52,26 @@ class AD7998_1:
 
         gpio.output(self._CONVST, True)
         time.sleep(0.1)
-        
+    def init_adc_bus(self, bus):
         ch_EN1 = "0000"
         ch_EN2 = "1000"
 
         ch_EN1 += self._CHANNELS[:4]
         ch_EN2 = self._CHANNELS[4:] + ch_EN2
-        
+
         for c in self._CHANNELS:
             if c == "1":
                 self._channels_EN += 1
 
         self.__startup(bus, int(ch_EN1, 2), int(ch_EN2, 2))
         self.__write_addr(bus, CONV)
-        self.get_readings(bus)
+
         for dummy_index in range(2 * self._channels_EN):
             data = self.get_readings(bus)[:2]
             data1 = self.__int_to_bin8(data[0])
             if(self.get_channel(data1[:4]) <= self._lowest):
-                lowest = self.get_channel(data1[:4])
-
-    def __itr__(self):
-        for v in self._voltage:
-            yield v
-
-    def __int_to_bin8(self, in_int):
-        return "{0:b}".format(in_int).zfill(8)
-
-    def __int_to_volt(self, in_int):
-        return ((float(in_int) / float(2 ** self._RES)) * float(self._VMAX))
-
+                self._lowest = self.get_channel(data1[:4])
+ 
     def __write_addr(self, bus, cmd):
         bus.write_byte(self._ADDRESS, cmd)
 
@@ -84,21 +79,31 @@ class AD7998_1:
         bus.write_i2c_block_data(self._ADDRESS, cmd, [data])
 
     def __write_two_byte(self, bus, cmd, data1, data2):
+        print self._ADDRESS
+        print cmd
+        print data1
+        print data2
         bus.write_i2c_block_data(self._ADDRESS, cmd, [data1, data2])
 
     def __startup(self, bus, cmd1, cmd2):
         self.__write_two_byte(bus, CONFIG, cmd1, cmd2)
-        self.__write_addr(bus, CONV)
+        self.__write_addr(bus, CONV)   
+ 
+    def __int_to_bin8(self, in_int):
+        return "{0:b}".format(in_int).zfill(8)
+
+    def __int_to_volt(self, in_int):
+        return ((float(in_int) / float(2 ** self._RES)) * float(self._VMAX))
 
     def get_channel(self, bin_string):
         return int(bin_string[-3:], 2) + 1
-    
+
     def get_readings(self, bus):
         gpio.output(self._CONVST, False)
         time.sleep(0.000001)
         gpio.output(self._CONVST, True)
         time.sleep(0.000001)
-        return bus.read_i2c_block_data(self._ADDRESS , CONV)
+        return bus.read_i2c_block_data(self._ADDRESS, CONV)
 
     def get_data(self, bus):
         while(True):
@@ -107,12 +112,11 @@ class AD7998_1:
             data2 = self.__int_to_bin8(data[1])
             if(self.get_channel(data1[:4]) == self._lowest):
                 voltage_bin = data1[:4] + data2
-                self._voltage[self.get_channel(data1[:4])] =  self.__int_to_volt(int(voltage_bin, 2))
-                break;
+                self._voltage[self.get_channel(data1[:4])] = self.__int_to_volt(int(voltage_bin, 2))
+                break
         for dummy_index in range(1, self._channels_EN):
             data = self.get_readings(bus)[:2]
             data1 = self.__int_to_bin8(data[0])
             data2 = self.__int_to_bin8(data[1])
             voltage_bin = data1[:4] + data2
-            self._voltage[self.get_channel(data1[:4])] = self.__int_to_volt(int(voltage_bin), 2)
-        return self._voltage
+            self._voltage[self.get_channel(data1[:4])] = self.__int_to_volt(int(voltage_bin, 2))
