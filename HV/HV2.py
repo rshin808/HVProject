@@ -135,9 +135,7 @@ if (True):
     time.sleep(1)
     display.hide()
     display.end_gpio()
-"""
 except Exception, e:
     print e
     display.hide()
     display.end_gpio()
-"""
