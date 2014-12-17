@@ -69,12 +69,13 @@ SCR2_SY2 = 0x4A
 class SEPS525_nhd:
 
 
-    def __init__(self, WIDTH = 160, HEIGHT = 128, font = "font14h"):
+    def __init__(self, WIDTH = 160, HEIGHT = 128, font = "font14h", font2 = "font14hL"):
 	    # Initialize gpio
         self.__setup_gpio()
         self._WIDTH = WIDTH
         self._HEIGHT = HEIGHT
         self._font = Font(font)
+        self._font2 = Font(font2)
         self.__seps525_init()
         self.__init_oled_display()
 	

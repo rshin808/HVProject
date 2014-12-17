@@ -4,9 +4,15 @@ from text import Text_string as TS
 from ad7998_1 import AD7998_1 as ADC  
 from ad5696 import AD5696 as DAC
 from encoder2b import Encoder2b as Encoder
+from font import Font
 import time
 import smbus
 import RPi.GPIO as gpio
+
+font14h = Font("font14h")
+font14h.init_bitmap("font14h.csv")
+font14hL = Font("font14hL")
+font14hL.init_bitmap("font14hL.csv")
 
 gpio.cleanup()
 gpio.setmode(gpio.BOARD)
@@ -49,14 +55,14 @@ class VIMeas(Temp):
         self._selection = ("Menu", "VISet", "1", "2", "3", "4")
         self._VD = []
         self._ID = []
-        self._VD.append(TS(28, 50, 14, VDefault))
-        self._VD.append(TS(28, 69, 14, VDefault))
-        self._VD.append(TS(28, 88, 14, VDefault))
-        self._VD.append(TS(28, 107, 14, VDefault))
-        self._ID.append(TS(91, 50, 14, IDefault))
-        self._ID.append(TS(91, 69, 14, IDefault))
-        self._ID.append(TS(91, 88, 14, IDefault))
-        self._ID.append(TS(91, 107, 14, IDefault))
+        self._VD.append(TS(28, 50, 14, VDefault, font14h))
+        self._VD.append(TS(28, 69, 14, VDefault, font14h))
+        self._VD.append(TS(28, 88, 14, VDefault, font14h))
+        self._VD.append(TS(28, 107, 14, VDefault, font14h))
+        self._ID.append(TS(91, 50, 14, IDefault, font14h))
+        self._ID.append(TS(91, 69, 14, IDefault, font14h))
+        self._ID.append(TS(91, 88, 14, IDefault, font14h))
+        self._ID.append(TS(91, 107, 14, IDefault, font14h))
         self._back = (175, 223)
         self._menu = (223, 60)
         self._line = [7, 18, 37] 
@@ -134,14 +140,14 @@ class VISet(Temp):
         self._selection = ("Menu", "VMS", "1", "2", "3", "4")
         self._VD = []
         self._ID = []
-        self._VD.append(TS(28, 50, 14, VDefault))
-        self._VD.append(TS(28, 69, 14, VDefault))
-        self._VD.append(TS(28, 88, 14, VDefault))
-        self._VD.append(TS(28, 107, 14, VDefault))
-        self._ID.append(TS(91, 50, 14, IDefault))
-        self._ID.append(TS(91, 69, 14, IDefault))
-        self._ID.append(TS(91, 88, 14, IDefault))
-        self._ID.append(TS(91, 107, 14, IDefault))
+        self._VD.append(TS(28, 50, 14, VDefault, font14h))
+        self._VD.append(TS(28, 69, 14, VDefault, font14h))
+        self._VD.append(TS(28, 88, 14, VDefault, font14h))
+        self._VD.append(TS(28, 107, 14, VDefault, font14h))
+        self._ID.append(TS(91, 50, 14, IDefault, font14h))
+        self._ID.append(TS(91, 69, 14, IDefault, font14h))
+        self._ID.append(TS(91, 88, 14, IDefault, font14h))
+        self._ID.append(TS(91, 107, 14, IDefault, font14h))
         self._back = (15, 233)
         self._menu = (223, 60)
         self._line = [7, 18, 37] 
@@ -191,7 +197,7 @@ class VISet(Temp):
             display.draw_hline(self._line[0], self._line[1], self._line[2], (0, 0))
     
     def update_strings(self, dac, bus, display):
-        
+        pass    
 
     def select_pos(self, display, check):
         global CURRENT
@@ -205,14 +211,14 @@ class VMS(Temp):
         self._selection = ("Menu", "IMS", "1", "2", "3", "4")
         self._VM = []
         self._VS = []
-        self._VM.append(TS(28, 50, 14, VDefault))
-        self._VM.append(TS(28, 69, 14, VDefault))
-        self._VM.append(TS(28, 88, 14, VDefault))
-        self._VM.append(TS(28, 107, 14, VDefault))
-        self._VS.append(TS(91, 50, 14, IDefault))
-        self._VS.append(TS(91, 69, 14, IDefault))
-        self._VS.append(TS(91, 88, 14, IDefault))
-        self._VS.append(TS(91, 107, 14, IDefault))
+        self._VM.append(TS(28, 50, 14, VDefault, font14h))
+        self._VM.append(TS(28, 69, 14, VDefault, font14h))
+        self._VM.append(TS(28, 88, 14, VDefault, font14h))
+        self._VM.append(TS(28, 107, 14, VDefault, font14h))
+        self._VS.append(TS(91, 50, 14, IDefault, font14h))
+        self._VS.append(TS(91, 69, 14, IDefault, font14h))
+        self._VS.append(TS(91, 88, 14, IDefault, font14h))
+        self._VS.append(TS(91, 107, 14, IDefault, font14h))
         self._back = (246, 0)
         self._menu = (223, 60)
         self._line = [7, 18, 37] 
@@ -275,14 +281,14 @@ class IMS(Temp):
         self._selection = ("Menu", "VIMeas", "1", "2", "3", "4")
         self._VD = []
         self._ID = []
-        self._VD.append(TS(28, 50, 14, VDefault))
-        self._VD.append(TS(28, 69, 14, VDefault))
-        self._VD.append(TS(28, 88, 14, VDefault))
-        self._VD.append(TS(28, 107, 14, VDefault))
-        self._ID.append(TS(91, 50, 14, IDefault))
-        self._ID.append(TS(91, 69, 14, IDefault))
-        self._ID.append(TS(91, 88, 14, IDefault))
-        self._ID.append(TS(91, 107, 14, IDefault))
+        self._VD.append(TS(28, 50, 14, VDefault, font14h))
+        self._VD.append(TS(28, 69, 14, VDefault, font14h))
+        self._VD.append(TS(28, 88, 14, VDefault, font14h))
+        self._VD.append(TS(28, 107, 14, VDefault, font14h))
+        self._ID.append(TS(91, 50, 14, IDefault, font14h))
+        self._ID.append(TS(91, 69, 14, IDefault, font14h))
+        self._ID.append(TS(91, 88, 14, IDefault, font14h))
+        self._ID.append(TS(91, 107, 14, IDefault, font14h))
         self._back = (249, 192)
         self._menu = (223, 60)
         self._line = [7, 18, 37] 
