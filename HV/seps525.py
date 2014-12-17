@@ -243,7 +243,7 @@ class SEPS525_nhd:
         self.seps525_set_region(x, y, 1, h)
         self.data_start()
         value = []
-        for pixel in range(2 * h):
+        for pixel in range(h):
             value.append(color[0])
             value.append(color[1])
 	
@@ -255,7 +255,7 @@ class SEPS525_nhd:
         self.data_start()
 
         value = []
-        for pixel in range(2 * w):
+        for pixel in range(w):
             value.append(color[0])
             value.append(color[1])
 

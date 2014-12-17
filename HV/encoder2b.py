@@ -7,17 +7,15 @@ class Encoder2b:
     def __init__(self, PINS):
         self._ENCA = int(PINS["ENCA"])
         self._ENCB = int(PINS["ENCB"])
-        self._ENCC1 = int(PINS["ENCC1"])
-        self._ENCC2 = int(PINS["ENCC2"])
+        self._ENCC = int(PINS["ENCC"])
         self._state = None
 
     def init_encoder(self, gpio):
         gpio.setup(self._ENCA, gpio.IN)
         gpio.setup(self._ENCB, gpio.IN)
-        gpio.setup(self._ENCC2, gpio.IN)
-        gpio.setup(self._ENCC1, gpio.IN, pull_up_down = gpio.PUD_UP)
+        gpio.setup(self._ENCC, gpio.IN, pull_up_down = gpio.PUD_UP)
         self._state = self.__get_state(gpio)
-        gpio.add_event_detect(self._ENCC1, gpio.FALLING, bouncetime = 300)
+        gpio.add_event_detect(self._ENCC, gpio.FALLING, bouncetime = 100)
 
     def __get_state(self, gpio):
         if gpio.input(self._ENCA) == True and gpio.input(self._ENCB) == True:
@@ -29,17 +27,20 @@ class Encoder2b:
         else:
             return 0
 
-    def wait(self, gpio):
-        if(gpio.event_detected(self._ENCC1) == True):
+    def wait_hold(self, gpio):       
+        if(gpio.event_detected(self._ENCC) == True):
             start = time.time()
-    
-    def __pressed(self, gpio, start):
-        print "called"
-        end = time.time()
-        while(gpio.input(self._ENCC2) == False):
+            while(gpio.input(self._ENCC) == False):
+                pass
             end = time.time()
-            print "here"
-        print str(end - start)
+            
+            if float(end - start) >= 0.1 and float(end - start) < 0.5:
+                return False
+            elif float(end - start) >= 0.5:
+                return True
+            else:
+                return None
+        return None            
 
     def get_direction(self, gpio):
         new_state = self.__get_state(gpio)
@@ -69,14 +70,15 @@ class Encoder2b:
            return direction
            
         else:
-            return "Same"
+            return "SAME"
+
+"""
 
 gpio.setmode(gpio.BOARD)
 PINS = {
     "ENCA" : 7, 
     "ENCB" : 21,
-    "ENCC1" : 16,
-    "ENCC2" : 24,
+    "ENCC" : 16,
 }
 ENC = Encoder2b(PINS)
 ENC.init_encoder(gpio)
@@ -88,5 +90,6 @@ except KeyboardInterrupt:
     gpio.cleanup()
 except Exception, e:
     print e
-    gpio.remove_event_detect(PINS["ENCC1"])
+    gpio.remove_event_detect(PINS["ENCC"])
     gpio.cleanup()
+"""
