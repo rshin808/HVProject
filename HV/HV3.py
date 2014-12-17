@@ -2,6 +2,7 @@ from seps525 import SEPS525_nhd as Oled
 from template import Template_img as Temp
 from text import Text_string as TS
 from ad7998_1 import AD7998_1 as ADC  
+from ad5696 import AD5696 as DAC
 import time
 import smbus
 import RPi.GPIO as gpio
@@ -12,6 +13,10 @@ gpio.setmode(gpio.BOARD)
 PINS = {
     "AS" : 11,
     "CONVST" : 10,
+    "A1" : 18,
+    "A0" : 22,
+    "RESET" : 15,
+    "LDAC" : 13,
 }
 
 t1 = time.time()
@@ -35,12 +40,14 @@ ID.append(TS(91, 107, 14, IDefault))
 t3 = time.time()
 bus = smbus.SMBus(1)
 CHV = ADC(PINS, 5, 12, 5, 0x23, "11111111")
+VOUT = DAC(PINS, 5, 12, 0x0C, [0, 0, 0, 0])
 CHV.init_adc_address(gpio)
+VOUT.init_dac_address(gpio)
 CHV.init_adc_bus(bus)
 t4 = time.time()
 print "INITTemplate: " + str(t2 - t1)
 print "INITTextDefault: " + str(t3 - t2)
-print "INITADC: " + str(t4 - t3)
+print "INITADCDAC: " + str(t4 - t3)
 
 
 
@@ -88,6 +95,8 @@ if(True):
     print "Initialize Finished"
     print "Changing Text"
     count = 0
+    VOUT.update_voltages([1, 2, 3, 4])
+    VOUT.output_voltages(bus)
     while count < 100:
         t1 = time.time()
         CHV.get_data(bus)
