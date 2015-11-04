@@ -1,8 +1,7 @@
-import csv
 
+import csv
 class Font:
     # LIBRARIES
-    import csv
 
     """
 	Reads a font from a csv bitmap.
