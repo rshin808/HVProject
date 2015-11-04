@@ -1,4 +1,4 @@
 HVProject
 =========
 # Overview
-This is the RPI controller code for the High Voltage Modules.
+This is the BBB controller code for the High Voltage Modules.
