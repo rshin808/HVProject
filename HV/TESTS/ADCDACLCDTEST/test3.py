@@ -116,8 +116,7 @@ try:
             for box in PAGES[currentPage]:
                 box.timedUpdate(params[i], handlers)
                 i += 1
-            print "before"
-            print settings 
+
             # Update the DAC output
             # CH1
             if gpio.input(4) == 1:
@@ -189,21 +188,6 @@ try:
                     if dacV <= HVV:
                         settings[1][1] = 0 
             AD5696Functions["outputV"](["b", round(settings[1][1], 3)])
-            print "after"
-            print settings
-        """
-        if PAGES[currentPage].getBox(1) == True and (now - checkTime) >= 0.005:
-            x = None
-            params = [x, x, x, x, readings[0], 5.0]
-            PAGES[currentPage].updateBox(1, params)
-            PAGES[currentPage].drawBox(1, handlers)
-
-        if PAGES[currentPage].getBox(2) == True and (now - checkTime) >= 0.005:
-            x = None
-            params = [x, x, x, x, readings[1], 5.0]
-            PAGES[currentPage].updateBox(2, params)
-            PAGES[currentPage].drawBox(2, handlers)    
-        """
 
         if (now - checkTime) >= 0.005:
             # Update DAC here
