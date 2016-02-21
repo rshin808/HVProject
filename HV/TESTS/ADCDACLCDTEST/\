@@ -73,7 +73,7 @@ class Box1:
 
     def updateSettings(self, settings = []):
         if self._channel != -1:
-            settings[channel] = self._settings[channel]
+            settings[self._channel] = self._settings
 
     def setActive(self, active = False):
         self._active = active
@@ -206,7 +206,7 @@ class Box2:
 
     def updateSettings(self, settings = []):
         if self._channel != -1:
-            settings[self._channel] = self._settings[self._channel]
+            settings[self._channel] = self._settings
 
     def setActive(self, active = False):
         self._active = active
@@ -248,10 +248,13 @@ class Box2:
                     self._editIndex = 0
                     
                     # save the settings
-                    numbers = []
+                    numbers = ""
                     
-                    for edit in self._editNumbers:
-                        numbers.append(float(str(edit)))
+                    for number in self._editNumber:
+                        numbers += str(number)
+
+                    numbers = round(float(numbers), 1)
+                    self._settings[0] = numbers
             else:
                 # check Pressed
                 # this affects multiple states dependent on active and activeEdit

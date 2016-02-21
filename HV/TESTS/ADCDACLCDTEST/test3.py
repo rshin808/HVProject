@@ -11,6 +11,7 @@ import spidev as spi
 from box import *
 from page import *
 from encoder2b_int import *
+from LIMITS import *
 
 SPI = spi.SpiDev()
 SPI.open(0, 0)
@@ -25,6 +26,12 @@ font14hL = Font("font14hL")
 font14hL.init_bitmap("font14hL.csv")
 
 gpio.setmode(gpio.BCM)
+
+# CH1 Enable
+gpio.setup(4, gpio.IN)
+
+# CH2 Enable
+gpio.setup(18, gpio.IN)
 time.sleep(0.5)
 
 display = SEPS525_NHD(DC = 24, RES = 25)
@@ -33,7 +40,7 @@ display.fill_screen((255, 255), SPI, gpio)
 
 home = Page(getIP(), [Box1("Channel 1", 0.0, 0.0, font14h, (255, 255), (0, 0), 10, 26, 1, 0, 0), Box1("Channel 2", 0.0, 0.0, font14h, (255, 255), (0, 0), 10, 80, 2, 0, 1)], 0)
 ch1 = Page(getIP(), [Box2("Channel 1", 0.0, font14h, font14hL, (255, 255), (0, 0), 10, 26, 1, 1, 0), Box1("Return to Main", 0.0, 0.0, font14h, (255, 255), (0, 0), 10, 80, 0, 1, 0)], 0)
-ch2 = Page(getIP(), [Box2("Channel 2", 0.0, font14h, font14hL, (255, 255), (0, 0), 10, 26, 2, 2, 0), Box1("Return to Main", 0.0, 0.0, font14h, (255, 255), (0, 0), 10, 80, 0, 2, 1)], 0)
+ch2 = Page(getIP(), [Box2("Channel 2", 0.0, font14h, font14hL, (255, 255), (0, 0), 10, 26, 2, 2, 1), Box1("Return to Main", 0.0, 0.0, font14h, (255, 255), (0, 0), 10, 80, 0, 2, 1)], 0)
 
 
 # Screen will cycle through pages
@@ -109,8 +116,72 @@ try:
             for box in PAGES[currentPage]:
                 box.timedUpdate(params[i], handlers)
                 i += 1
-            print settings
+            
+            # Update the DAC output
+            # CH1
+            if gpio.input(4) == 1:
+                # Keep relative to HVV
+                dacV = 4300 * (settings[0][1] / 5.0)
+                HVV = settings[0][0]
+                
+                if dacV < HVV:
+                    settings[0][1] += 0.001
+                    dacV = 4300 * (settings[0][1] / 5.0)
                     
+                    if dacV >= HVV:
+                        settings[0][1] = (HVV / 4300.0) * 5.0
+                else:
+                    settings[0][1] -= 0.001
+                    dacV = 4300 * (settings[0][1] / 5.0)
+
+                    if dacV <= HVV:
+                        settings[0][1] = (HVV / 4300.0) * 5.0
+                     
+            else:
+                # Decrease the voltage to 0
+                dacV = 4300 * (settings[0][1] / 5.0)
+                HVV = 0
+                
+                if dacV > HVV:
+                    settings[0][1] -= 0.001
+                    dacV = 4300 * (settings[0][1] / 5.0)
+                    
+                    if dacV <= HVV:
+                        settings[0][1] = 0 
+            AD5696Functions["outputV"](["d", round(settings[0][1], 3)])
+
+            # CH2
+            if gpio.input(18) == 1:
+                # Keep relative to HVV
+                dacV = 4300 * (settings[1][1] / 5.0) 
+                HVV = settings[1][0]
+                
+                if dacV < HVV:
+                    settings[1][1] += 0.001
+                    dacV = 4300 * (settings[1][1] / 5.0)
+                    
+                    if dacV >= HVV:
+                        settings[1][1] = (HVV / 4300.0) * 5.0, 1
+                else:
+                    settings[1][1] -= 0.001
+                    dacV = 4300 * (settings[1][1] / 5.0)
+
+                    if dacV <= HVV:
+                        settings[1][1] = (HVV / 4300.0) * 5.0
+                     
+            else:
+                # Decrease the voltage to 0
+                dacV = 4300 * (settings[1][1] / 5.0)
+                HVV = 0
+                
+                if dacV > HVV:
+                    settings[1][1] -= 0.001
+                    dacV = 4300 * (settings[1][1] / 5.0)
+                    
+                    if dacV <= HVV:
+                        settings[1][1] = 0 
+            AD5696Functions["outputV"](["b", round(settings[1][1], 3)])
+
         """
         if PAGES[currentPage].getBox(1) == True and (now - checkTime) >= 0.005:
             x = None

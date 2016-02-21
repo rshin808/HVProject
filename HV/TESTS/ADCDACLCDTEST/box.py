@@ -253,7 +253,7 @@ class Box2:
                     for number in self._editNumber:
                         numbers += str(number)
 
-                    numbers = round(float(numbers), 2)
+                    numbers = round(float(numbers), 1)
                     self._settings[0] = numbers
             else:
                 # check Pressed
