@@ -29,9 +29,14 @@ gpio.setmode(gpio.BCM)
 
 # CH1 Enable
 gpio.setup(4, gpio.IN)
+gpio.setup(30, gpio.OUT)
+gpio.output(30, False)
 
 # CH2 Enable
 gpio.setup(18, gpio.IN)
+gpio.setup(28, gpio.OUT)
+gpio.output(28, False)
+
 time.sleep(0.5)
 
 display = SEPS525_NHD(DC = 24, RES = 25)
@@ -120,6 +125,7 @@ try:
             # Update the DAC output
             # CH1
             if gpio.input(4) == 1:
+                gpio.output(30, True)
                 # Keep relative to HVV
                 dacV = 4300 * (settings[0][1] / 5.0)
                 HVV = settings[0][0]
@@ -128,13 +134,13 @@ try:
                     HVV = HVMAXV
                 
                 if dacV < HVV:
-                    settings[0][1] += 0.001
+                    settings[0][1] += 0.01
                     dacV = 4300 * (settings[0][1] / 5.0)
                     
                     if dacV >= HVV:
                         settings[0][1] = (HVV / 4300.0) * 5.0
                 else:
-                    settings[0][1] -= 0.001
+                    settings[0][1] -= 0.01
                     dacV = 4300 * (settings[0][1] / 5.0)
 
                     if dacV <= HVV:
@@ -146,15 +152,17 @@ try:
                 HVV = 0
                 
                 if dacV > HVV:
-                    settings[0][1] -= 0.001
+                    settings[0][1] -= 0.01
                     dacV = 4300 * (settings[0][1] / 5.0)
                     
                     if dacV <= HVV:
-                        settings[0][1] = 0 
+                        settings[0][1] = 0
+                        gpio.output(30, False) 
             AD5696Functions["outputV"](["d", round(settings[0][1], 3)])
 
             # CH2
             if gpio.input(18) == 1:
+                gpio.output(28, True)
                 # Keep relative to HVV
                 dacV = 4300 * (settings[1][1] / 5.0)
                 HVV = settings[1][0]
@@ -162,15 +170,14 @@ try:
                 if HVV >= HVMAXV:
                     HVV = HVMAXV
 
-
                 if dacV < HVV:
-                    settings[1][1] += 0.001
+                    settings[1][1] += 0.01
                     dacV = 4300 * (settings[1][1] / 5.0)
                     
                     if dacV >= HVV:
                         settings[1][1] = (HVV / 4300.0) * 5.0
                 else:
-                    settings[1][1] -= 0.001
+                    settings[1][1] -= 0.01
                     dacV = 4300 * (settings[1][1] / 5.0)
                 
                     if dacV <= HVV:
@@ -182,11 +189,12 @@ try:
                 HVV = 0
                 
                 if dacV > HVV:
-                    settings[1][1] -= 0.001
+                    settings[1][1] -= 0.01
                     dacV = 4300 * (settings[1][1] / 5.0)
                     
                     if dacV <= HVV:
                         settings[1][1] = 0 
+                        gpio.output(28, False)
             AD5696Functions["outputV"](["b", round(settings[1][1], 3)])
 
         if (now - checkTime) >= 0.005:
