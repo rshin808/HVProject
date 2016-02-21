@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import smbus
 import RPi.GPIO as gpio
 import time
@@ -6,6 +7,7 @@ from ad5696Functions import *
 import csv
 from seps525 import *
 from getIP import *
+from font import *
 from text import Text_string as TS
 import spidev as spi
 from box import *
@@ -19,12 +21,10 @@ SPI.max_speed_hz = 100000000
 SPI.mode = 3
 
 i2c = smbus.SMBus(1)
-
 font14h = Font("font14h")
-font14h.init_bitmap("font14h.csv")
+font14h.init_bitmap("/home/pi/GIT/HVProject/HV/TESTS/ADCDACLCDTEST/font14h.csv")
 font14hL = Font("font14hL")
-font14hL.init_bitmap("font14hL.csv")
-
+font14hL.init_bitmap("/home/pi/GIT/HVProject/HV/TESTS/ADCDACLCDTEST/font14hL.csv")
 gpio.setmode(gpio.BCM)
 
 # CH1 Enable
@@ -116,13 +116,17 @@ try:
             for box in PAGES[currentPage]:
                 box.timedUpdate(params[i], handlers)
                 i += 1
-            
+            print "before"
+            print settings 
             # Update the DAC output
             # CH1
             if gpio.input(4) == 1:
                 # Keep relative to HVV
                 dacV = 4300 * (settings[0][1] / 5.0)
                 HVV = settings[0][0]
+
+                if HVV >= HVMAXV:
+                    HVV = HVMAXV
                 
                 if dacV < HVV:
                     settings[0][1] += 0.001
@@ -153,19 +157,23 @@ try:
             # CH2
             if gpio.input(18) == 1:
                 # Keep relative to HVV
-                dacV = 4300 * (settings[1][1] / 5.0) 
+                dacV = 4300 * (settings[1][1] / 5.0)
                 HVV = settings[1][0]
                 
+                if HVV >= HVMAXV:
+                    HVV = HVMAXV
+
+
                 if dacV < HVV:
                     settings[1][1] += 0.001
                     dacV = 4300 * (settings[1][1] / 5.0)
                     
                     if dacV >= HVV:
-                        settings[1][1] = (HVV / 4300.0) * 5.0, 1
+                        settings[1][1] = (HVV / 4300.0) * 5.0
                 else:
                     settings[1][1] -= 0.001
                     dacV = 4300 * (settings[1][1] / 5.0)
-
+                
                     if dacV <= HVV:
                         settings[1][1] = (HVV / 4300.0) * 5.0
                      
@@ -181,7 +189,8 @@ try:
                     if dacV <= HVV:
                         settings[1][1] = 0 
             AD5696Functions["outputV"](["b", round(settings[1][1], 3)])
-
+            print "after"
+            print settings
         """
         if PAGES[currentPage].getBox(1) == True and (now - checkTime) >= 0.005:
             x = None

@@ -32,3 +32,5 @@ class Font:
 		    self.FONT[str(row[0])].append(row[1] + self._spacer)
 		else:
 		    self.FONT[str(row[0])].append(row[1] + self._spacer)
+
+

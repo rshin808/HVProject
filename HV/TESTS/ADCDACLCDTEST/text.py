@@ -1,7 +1,7 @@
 from font import Font
 
-font14h = Font("font14h")
-font14h.init_bitmap("font14h.csv")
+font14h = Font("/home/pi/GIT/HVProject/HV/TESTS/ADCDACLCDTEST/font14h")
+font14h.init_bitmap("/home/pi/GIT/HVProject/HV/TESTS/ADCDACLCDTEST/font14h.csv")
 
 class Text_string:
     def __init__(self, x, y, height, string, font):
